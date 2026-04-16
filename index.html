@@ -148,6 +148,34 @@ canvas{display:block}
 .lb-score{font-size:clamp(11px,1.5vw,16px);font-weight:700;color:#f1c40f;font-family:'Share Tech Mono',monospace}
 .lb-wave{font-size:clamp(7px,.9vw,9px);color:#334455;font-family:'Share Tech Mono',monospace;min-width:50px;text-align:right}
 .lb-loading{text-align:center;color:#0a3545;font-family:'Share Tech Mono',monospace;font-size:clamp(9px,1.2vw,12px);padding:20px;letter-spacing:3px}
+
+/* SETTINGS */
+#settings-btn{position:absolute;bottom:20px;left:20px;cursor:pointer;pointer-events:all;display:flex;align-items:center;gap:6px;padding:6px 12px;border:1px solid rgba(0,210,255,.2);background:rgba(0,210,255,.05);color:#0a5566;font-size:clamp(8px,1vw,10px);letter-spacing:2px;transition:all .2s;font-family:'Orbitron',sans-serif}
+#settings-btn:hover{background:rgba(0,210,255,.12);color:#00d2ff}
+#settings-overlay{position:absolute;inset:0;background:rgba(1,3,8,.95);display:none;justify-content:center;align-items:center;z-index:35;padding:12px}
+.settings-box{background:rgba(3,10,22,.98);border:1px solid rgba(0,210,255,.2);padding:clamp(14px,2.5vw,28px);width:min(520px,96vw);max-height:92vh;overflow-y:auto}
+.settings-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid rgba(0,210,255,.1);padding-bottom:10px}
+.settings-title{font-size:clamp(13px,2.5vw,20px);font-weight:900;letter-spacing:5px;color:#00d2ff;text-shadow:0 0 10px rgba(0,210,255,.3)}
+.settings-close{cursor:pointer;pointer-events:all;font-size:clamp(12px,1.8vw,16px);color:#ff2244;border:1px solid rgba(255,34,68,.3);background:transparent;padding:4px 12px;font-family:'Orbitron';transition:all .2s;user-select:none}
+.settings-close:hover{background:rgba(255,34,68,.15)}
+.settings-section{margin-bottom:18px}
+.settings-section-lbl{font-size:clamp(7px,.9vw,9px);letter-spacing:4px;color:#0a3545;margin-bottom:10px;text-transform:uppercase;font-family:'Share Tech Mono',monospace}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(0,210,255,.05)}
+.settings-row:last-child{border-bottom:none}
+.settings-label{font-size:clamp(8px,.95vw,11px);color:#aaccdd;letter-spacing:1px;display:flex;align-items:center;gap:8px}
+.settings-label .s-icon{font-size:clamp(14px,1.8vw,18px)}
+.settings-ctrl{display:flex;align-items:center;gap:10px}
+.vol-slider{-webkit-appearance:none;appearance:none;width:clamp(90px,14vw,160px);height:4px;background:rgba(0,210,255,.15);border-radius:2px;outline:none;cursor:pointer}
+.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#00d2ff;cursor:pointer;box-shadow:0 0 6px rgba(0,210,255,.5)}
+.vol-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#00d2ff;cursor:pointer;border:none}
+.vol-val{font-size:clamp(8px,.9vw,10px);color:#00d2ff;font-family:'Share Tech Mono',monospace;min-width:32px;text-align:right}
+.toggle-btn{cursor:pointer;pointer-events:all;padding:4px 14px;font-family:'Orbitron';font-size:clamp(7px,.85vw,9px);letter-spacing:2px;border:1px solid rgba(0,210,255,.25);background:transparent;color:#334455;transition:all .2s;user-select:none}
+.toggle-btn.on{border-color:rgba(0,210,255,.6);background:rgba(0,210,255,.1);color:#00d2ff}
+.toggle-btn:hover{background:rgba(0,210,255,.08)}
+.settings-divider{height:1px;background:rgba(0,210,255,.07);margin:10px 0}
+/* In-game settings icon */
+#ingame-settings-btn{position:absolute;pointer-events:all;cursor:pointer;font-size:clamp(14px,2vw,18px);opacity:.5;transition:opacity .2s;user-select:none;z-index:6}
+#ingame-settings-btn:hover{opacity:1}
 </style>
 </head>
 <body>
@@ -172,6 +200,7 @@ canvas{display:block}
     </div>
     <button class="btn-go" onclick="startGame()">KHỞI ĐỘNG</button>
     <div id="lb-btn" onclick="openLeaderboard()">🏆 LEADERBOARD</div>
+    <div id="settings-btn" onclick="openSettings()">⚙ SETTINGS</div>
   </div>
 
   <div id="gameover">
@@ -263,6 +292,68 @@ canvas{display:block}
       <div class="lb-list" id="lb-list"><div class="lb-loading">LOADING...</div></div>
     </div>
   </div>
+
+  <!-- SETTINGS OVERLAY -->
+  <div id="settings-overlay">
+    <div class="settings-box">
+      <div class="settings-header">
+        <div class="settings-title">⚙ SETTINGS</div>
+        <button class="settings-close" onclick="closeSettings()">✕</button>
+      </div>
+      <div class="settings-section">
+        <div class="settings-section-lbl">── Master ──</div>
+        <div class="settings-row">
+          <div class="settings-label"><span class="s-icon">🔊</span> Master Volume</div>
+          <div class="settings-ctrl"><input type="range" class="vol-slider" id="vol-master" min="0" max="100" value="80" oninput="onVolChange('master',this.value)"><span class="vol-val" id="lbl-master">80</span></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label"><span class="s-icon">🎵</span> Background Music</div>
+          <div class="settings-ctrl"><input type="range" class="vol-slider" id="vol-bgm" min="0" max="100" value="40" oninput="onVolChange('bgm',this.value)"><span class="vol-val" id="lbl-bgm">40</span><button class="toggle-btn on" id="toggle-bgm" onclick="toggleAudio('bgm')">ON</button></div>
+        </div>
+      </div>
+      <div class="settings-divider"></div>
+      <div class="settings-section">
+        <div class="settings-section-lbl">── Weapon Sounds ──</div>
+        <div class="settings-row">
+          <div class="settings-label"><span class="s-icon">🔫</span> Weapon SFX (master)</div>
+          <div class="settings-ctrl"><input type="range" class="vol-slider" id="vol-weapon" min="0" max="100" value="70" oninput="onVolChange('weapon',this.value)"><span class="vol-val" id="lbl-weapon">70</span><button class="toggle-btn on" id="toggle-weapon" onclick="toggleAudio('weapon')">ON</button></div>
+        </div>
+        <div id="weapon-sound-rows"></div>
+      </div>
+      <div class="settings-divider"></div>
+      <div class="settings-section">
+        <div class="settings-section-lbl">── Game SFX ──</div>
+        <div class="settings-row">
+          <div class="settings-label"><span class="s-icon">💥</span> Explosions</div>
+          <div class="settings-ctrl"><input type="range" class="vol-slider" id="vol-explosion" min="0" max="100" value="60" oninput="onVolChange('explosion',this.value)"><span class="vol-val" id="lbl-explosion">60</span><button class="toggle-btn on" id="toggle-explosion" onclick="toggleAudio('explosion')">ON</button></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label"><span class="s-icon">👾</span> Enemy Death</div>
+          <div class="settings-ctrl"><input type="range" class="vol-slider" id="vol-death" min="0" max="100" value="50" oninput="onVolChange('death',this.value)"><span class="vol-val" id="lbl-death">50</span><button class="toggle-btn on" id="toggle-death" onclick="toggleAudio('death')">ON</button></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label"><span class="s-icon">😈</span> Boss Roar</div>
+          <div class="settings-ctrl"><input type="range" class="vol-slider" id="vol-boss" min="0" max="100" value="80" oninput="onVolChange('boss',this.value)"><span class="vol-val" id="lbl-boss">80</span><button class="toggle-btn on" id="toggle-boss" onclick="toggleAudio('boss')">ON</button></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label"><span class="s-icon">💰</span> Coin Pickup</div>
+          <div class="settings-ctrl"><input type="range" class="vol-slider" id="vol-coin" min="0" max="100" value="40" oninput="onVolChange('coin',this.value)"><span class="vol-val" id="lbl-coin">40</span><button class="toggle-btn on" id="toggle-coin" onclick="toggleAudio('coin')">ON</button></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label"><span class="s-icon">❤</span> Health Pickup</div>
+          <div class="settings-ctrl"><input type="range" class="vol-slider" id="vol-health" min="0" max="100" value="70" oninput="onVolChange('health',this.value)"><span class="vol-val" id="lbl-health">70</span><button class="toggle-btn on" id="toggle-health" onclick="toggleAudio('health')">ON</button></div>
+        </div>
+        <div class="settings-row">
+          <div class="settings-label"><span class="s-icon">🛡</span> Player Hit</div>
+          <div class="settings-ctrl"><input type="range" class="vol-slider" id="vol-hit" min="0" max="100" value="65" oninput="onVolChange('hit',this.value)"><span class="vol-val" id="lbl-hit">65</span><button class="toggle-btn on" id="toggle-hit" onclick="toggleAudio('hit')">ON</button></div>
+        </div>
+      </div>
+      <div class="settings-divider"></div>
+      <button class="shop-resume-btn" onclick="closeSettings()">▶ BACK</button>
+    </div>
+  </div>
+
+  <div id="ingame-settings-btn" onclick="openSettings()">⚙</div>
 
   <canvas id="c"></canvas>
 </div>
@@ -551,7 +642,7 @@ function getAimAngle(){
 //  UI
 // ══════════════════════════════════════════════════════════
 const hbar=document.getElementById('hbar');
-function updHp(){
+function _updHpCore(){
   const pct=health/CFG.playerMaxHp*100;
   hbar.style.width=pct+'%';
   hbar.style.background=pct>60?'linear-gradient(90deg,#00aa44,#2ecc71,#55ff88)':pct>30?'linear-gradient(90deg,#bb8800,#f1c40f,#ffdd44)':'linear-gradient(90deg,#cc1133,#ff2244,#ff6677)';
@@ -590,7 +681,7 @@ function updWave(){
   document.getElementById('wp-val').innerText=waveKills+'/'+waveTarget;
   document.getElementById('kv').innerText=waveKills+'/'+waveTarget;
 }
-function updCoins(){
+function _updCoinsCore(){
   document.getElementById('coin-val').innerText=coins;
   document.getElementById('shop-coin-disp').innerText=coins;
 }
@@ -750,7 +841,7 @@ function spawnParticles(x,y,count,color,size=4,speed=3,life=20){
   for(let i=0;i<budget;i++){const a=Math.PI*2*Math.random();particles.push({x,y,vx:Math.cos(a)*(speed*(.5+Math.random())),vy:Math.sin(a)*(speed*(.5+Math.random())),size:size*(.5+Math.random()*.8),color,life:life*(.6+Math.random()*.8),maxLife:life});}
 }
 
-function explodeAt(x,y,radius,dmg,color){
+function _explodeAtCore(x,y,radius,dmg,color){
   for(let mi=monsters.length-1;mi>=0;mi--){
     const m=monsters[mi],d=Math.hypot(x-m.x,y-m.y);
     if(d<radius){m.hp-=dmg*(1-d/radius*.5);m.burnTimer=40;if(m.hp<=0){if(m.type==='SPLITTER')spawnSplitterChildren(m);dropLoot(m);spawnDeathFx(m);monsters.splice(mi,1);onKill();}}
@@ -771,21 +862,21 @@ function spawnSplitterChildren(m){
 // ══════════════════════════════════════════════════════════
 //  WAVE / BOSS
 // ══════════════════════════════════════════════════════════
-function onKill(){
+function _onKillCore(){
   waveKills++;kills++;score++;
   document.getElementById('sv').innerText=score;
   updWave();
   if(waveKills>=waveTarget&&!waveClearing&&!bossPhase){bossPhase=true;spawnWaveBoss();}
 }
 
-function spawnWaveBoss(){
+function _spawnWaveBossCore(){
   const def=getBossDef(wave);const bossHp=enemyHpForWave(def.hp);
   let loc;for(let i=0;i<50;i++){loc=safe(200);if(Math.hypot(loc.x-player.x,loc.y-player.y)>400)break;}
   boss={x:loc.x,y:loc.y,size:26,speed:def.speed,hp:bossHp,maxHp:bossHp,lastAttack:0,angle:0,pulseT:0,lastShot:0,lastSpecial:0,specialCooldown:Math.max(2000,3500-wave*200),def,type:'BOSS'};
   bossDeadProcessing=false;updBoss();notif('⚠ BOSS: '+def.name,'#ff2244');notif('DEFEAT BOSS TO ADVANCE!','#ff6600');
 }
 
-function processBossDead(){
+function _processBossDeadCore(){
   if(!boss||bossDeadProcessing)return;
   bossDeadProcessing=true;
   const bx=boss.x,by=boss.y,bc=boss.def.color;
@@ -1366,7 +1457,7 @@ function drawMinimap(){
 // ══════════════════════════════════════════════════════════
 //  START
 // ══════════════════════════════════════════════════════════
-function startGame(){
+function _startGameCore(){
   playerName=(document.getElementById('player-name-input').value.trim().toUpperCase()||'PLAYER').slice(0,16);
   player.x=WORLD_W/2;player.y=WORLD_H/2;updateCam();
   document.getElementById('intro').style.display='none';
@@ -1390,6 +1481,662 @@ function startGame(){
   loop();
 }
 window.addEventListener('orientationchange',()=>setTimeout(resizeGame,200));
+resizeGame();
+
+// ══════════════════════════════════════════════════════════
+//  AUDIO ENGINE — Web Audio API procedural synthesis
+// ══════════════════════════════════════════════════════════
+let AC = null;
+
+function getAC(){
+  if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended') AC.resume();
+  return AC;
+}
+
+// ── Volume / Toggle settings ──
+const VOL = {
+  master:0.8, bgm:0.4, weapon:0.7,
+  explosion:0.6, death:0.5, boss:0.8,
+  coin:0.4, health:0.7, hit:0.65,
+  // per-weapon
+  NORMAL:1, BURST:1, SPREAD:1, GRENADE:1, FLAME:1, FROST:1,
+  PLASMA:1, LIGHTNING:1, MINE:1, PULSE:1, GRAVITY:1, RAILGUN:1,
+};
+const MUTED = {
+  bgm:false, weapon:false, explosion:false,
+  death:false, boss:false, coin:false, health:false, hit:false,
+};
+
+function effVol(category, weaponKey){
+  if(MUTED[category]) return 0;
+  let v = VOL.master * (VOL[category]||1);
+  if(category==='weapon' && weaponKey) v *= (VOL[weaponKey]||1);
+  return Math.max(0, Math.min(1, v));
+}
+
+// ── Core synthesis helpers ──
+function playTone(freq, type, duration, vol, env={a:.005,d:.1,s:.3,r:.1}, dest){
+  const ac = getAC();
+  const now = ac.currentTime;
+  const osc = ac.createOscillator();
+  const gain = ac.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, now);
+  gain.gain.setValueAtTime(0, now);
+  gain.gain.linearRampToValueAtTime(vol, now + env.a);
+  gain.gain.linearRampToValueAtTime(vol * env.s, now + env.a + env.d);
+  gain.gain.setValueAtTime(vol * env.s, now + duration - env.r);
+  gain.gain.linearRampToValueAtTime(0, now + duration);
+  osc.connect(gain);
+  gain.connect(dest || ac.destination);
+  osc.start(now);
+  osc.stop(now + duration + 0.01);
+  return {osc, gain};
+}
+
+function playNoise(duration, vol, filterFreq, filterType='bandpass', q=1, dest){
+  const ac = getAC();
+  const now = ac.currentTime;
+  const bufSize = ac.sampleRate * Math.min(duration + 0.1, 2);
+  const buf = ac.createBuffer(1, bufSize, ac.sampleRate);
+  const data = buf.getChannelData(0);
+  for(let i=0;i<bufSize;i++) data[i] = Math.random()*2-1;
+  const src = ac.createBufferSource();
+  src.buffer = buf;
+  const filt = ac.createBiquadFilter();
+  filt.type = filterType;
+  filt.frequency.value = filterFreq;
+  filt.Q.value = q;
+  const gain = ac.createGain();
+  gain.gain.setValueAtTime(vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  src.connect(filt); filt.connect(gain); gain.connect(dest || ac.destination);
+  src.start(now); src.stop(now + duration + 0.05);
+}
+
+function sweepFreq(osc, from, to, duration){
+  const ac = getAC();
+  const now = ac.currentTime;
+  osc.frequency.setValueAtTime(from, now);
+  osc.frequency.exponentialRampToValueAtTime(to, now + duration);
+}
+
+// ══════════════════════════════════════════════════════════
+//  WEAPON SOUNDS
+// ══════════════════════════════════════════════════════════
+let lastShootSoundTime = {};
+
+function playShotSound(type){
+  if(MUTED.weapon) return;
+  const ac = getAC(); if(!ac) return;
+  const now = ac.currentTime;
+  const cooldown = {FLAME:0.08, FROST:0.08, BURST:0.05}[type] || 0.18;
+  if(lastShootSoundTime[type] && now - lastShootSoundTime[type] < cooldown) return;
+  lastShootSoundTime[type] = now;
+  const v = effVol('weapon', type);
+  if(v <= 0) return;
+
+  switch(type){
+    case 'NORMAL':{
+      // Sharp pew - laser pistol
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(900, now);
+      osc.frequency.exponentialRampToValueAtTime(200, now + 0.12);
+      g.gain.setValueAtTime(v*0.22, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.13);
+      break;}
+    case 'BURST':{
+      // Short rapid pop
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(650 + Math.random()*100, now);
+      osc.frequency.exponentialRampToValueAtTime(150, now + 0.07);
+      g.gain.setValueAtTime(v*0.18, now);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.08);
+      break;}
+    case 'SPREAD':{
+      // Whoosh scatter shot
+      playNoise(0.1, v*0.25, 3000, 'bandpass', 2);
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(500, now);
+      osc.frequency.exponentialRampToValueAtTime(120, now+0.1);
+      g.gain.setValueAtTime(v*0.12, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.1);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.11);
+      break;}
+    case 'GRENADE':{
+      // Thunk launch + spin
+      playNoise(0.05, v*0.3, 200, 'lowpass', 1);
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'sine'; osc.frequency.setValueAtTime(180, now);
+      osc.frequency.linearRampToValueAtTime(60, now+0.15);
+      g.gain.setValueAtTime(v*0.35, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.15);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.16);
+      break;}
+    case 'FLAME':{
+      // Continuous whoosh hiss
+      playNoise(0.12, v*0.2, 1800, 'bandpass', 0.8);
+      break;}
+    case 'FROST':{
+      // Icy crystal chime
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1400 + Math.random()*400, now);
+      osc.frequency.linearRampToValueAtTime(800, now+0.18);
+      g.gain.setValueAtTime(v*0.18, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.18);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.19);
+      // Ice crackle
+      playNoise(0.06, v*0.12, 6000, 'highpass', 1);
+      break;}
+    case 'PLASMA':{
+      // High-pitched charge beam
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      const osc2 = ac.createOscillator(); const g2 = ac.createGain();
+      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, now);
+      osc.frequency.exponentialRampToValueAtTime(2800, now+0.08);
+      osc.frequency.exponentialRampToValueAtTime(400, now+0.22);
+      g.gain.setValueAtTime(v*0.25, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.22);
+      osc2.type = 'sine'; osc2.frequency.setValueAtTime(600, now);
+      osc2.frequency.exponentialRampToValueAtTime(3200, now+0.22);
+      g2.gain.setValueAtTime(v*0.15, now); g2.gain.exponentialRampToValueAtTime(0.001, now+0.22);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.23);
+      osc2.connect(g2); g2.connect(ac.destination); osc2.start(now); osc2.stop(now+0.23);
+      break;}
+    case 'LIGHTNING':{
+      // Electric crack + buzz
+      playNoise(0.04, v*0.5, 4000, 'bandpass', 0.5);
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(80, now);
+      g.gain.setValueAtTime(v*0.3, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.08);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.09);
+      break;}
+    case 'MINE':{
+      // Click + beep placement
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'sine'; osc.frequency.setValueAtTime(1200, now);
+      osc.frequency.setValueAtTime(800, now+0.03);
+      g.gain.setValueAtTime(v*0.2, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.1);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.11);
+      break;}
+    case 'PULSE':{
+      // Heavy shotgun boom
+      playNoise(0.15, v*0.4, 300, 'lowpass', 1);
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'sine'; osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(40, now+0.18);
+      g.gain.setValueAtTime(v*0.5, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.18);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.19);
+      break;}
+    case 'GRAVITY':{
+      // Deep womp gravity pull
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'sine'; osc.frequency.setValueAtTime(200, now);
+      osc.frequency.exponentialRampToValueAtTime(40, now+0.5);
+      g.gain.setValueAtTime(v*0.3, now); g.gain.linearRampToValueAtTime(v*0.4, now+0.1);
+      g.gain.exponentialRampToValueAtTime(0.001, now+0.5);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.51);
+      break;}
+    case 'RAILGUN':{
+      // Massive charge + crack
+      playNoise(0.03, v*0.6, 2000, 'bandpass', 0.3);
+      const osc = ac.createOscillator(); const g = ac.createGain();
+      osc.type = 'sawtooth'; osc.frequency.setValueAtTime(60, now);
+      osc.frequency.exponentialRampToValueAtTime(4000, now+0.04);
+      osc.frequency.exponentialRampToValueAtTime(30, now+0.35);
+      g.gain.setValueAtTime(v*0.6, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.35);
+      osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.36);
+      // Secondary resonance
+      const osc2 = ac.createOscillator(); const g2 = ac.createGain();
+      osc2.type = 'sine'; osc2.frequency.setValueAtTime(120, now);
+      osc2.frequency.exponentialRampToValueAtTime(2000, now+0.06);
+      osc2.frequency.exponentialRampToValueAtTime(80, now+0.3);
+      g2.gain.setValueAtTime(v*0.4, now+0.03); g2.gain.exponentialRampToValueAtTime(0.001, now+0.3);
+      osc2.connect(g2); g2.connect(ac.destination); osc2.start(now+0.03); osc2.stop(now+0.31);
+      break;}
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  SFX: EXPLOSION
+// ══════════════════════════════════════════════════════════
+function playExplosion(small=false){
+  if(MUTED.explosion) return;
+  const ac = getAC(); if(!ac) return;
+  const v = effVol('explosion');
+  if(v<=0) return;
+  const now = ac.currentTime;
+  const dur = small ? 0.25 : 0.55;
+  // Low boom
+  const osc = ac.createOscillator(); const g = ac.createGain();
+  osc.type = 'sine'; osc.frequency.setValueAtTime(small?80:50, now);
+  osc.frequency.exponentialRampToValueAtTime(small?15:10, now+dur);
+  g.gain.setValueAtTime(v*(small?0.35:0.6), now); g.gain.exponentialRampToValueAtTime(0.001, now+dur);
+  osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+dur+0.01);
+  // Noise crack
+  playNoise(dur*0.7, v*(small?0.25:0.4), small?800:400, 'lowpass', 0.8);
+  if(!small){
+    // Sub rumble
+    playNoise(0.3, v*0.3, 80, 'lowpass', 2);
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+//  SFX: ENEMY DEATH
+// ══════════════════════════════════════════════════════════
+function playEnemyDeath(){
+  if(MUTED.death) return;
+  const ac = getAC(); if(!ac) return;
+  const v = effVol('death');
+  if(v<=0) return;
+  const now = ac.currentTime;
+  playNoise(0.12, v*0.3, 1200, 'bandpass', 1);
+  const osc = ac.createOscillator(); const g = ac.createGain();
+  osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300+Math.random()*200, now);
+  osc.frequency.exponentialRampToValueAtTime(30, now+0.18);
+  g.gain.setValueAtTime(v*0.2, now); g.gain.exponentialRampToValueAtTime(0.001, now+0.18);
+  osc.connect(g); g.connect(ac.destination); osc.start(now); osc.stop(now+0.19);
+}
+
+// ══════════════════════════════════════════════════════════
+//  SFX: BOSS ROAR
+// ══════════════════════════════════════════════════════════
+function playBossRoar(){
+  if(MUTED.boss) return;
+  const ac = getAC(); if(!ac) return;
+  const v = effVol('boss');
+  if(v<=0) return;
+  const now = ac.currentTime;
+
+  // Deep distorted growl sweep
+  const osc1 = ac.createOscillator();
+  const osc2 = ac.createOscillator();
+  const osc3 = ac.createOscillator();
+  const dist = ac.createWaveShaper();
+  const g = ac.createGain();
+  const filt = ac.createBiquadFilter();
+
+  // Distortion curve
+  const curve = new Float32Array(256);
+  for(let i=0;i<256;i++){const x=i/128-1;curve[i]=Math.tanh(x*8)*0.7;}
+  dist.curve = curve;
+
+  osc1.type='sawtooth'; osc1.frequency.setValueAtTime(30, now); osc1.frequency.linearRampToValueAtTime(80, now+0.3); osc1.frequency.linearRampToValueAtTime(25, now+1.8);
+  osc2.type='square';   osc2.frequency.setValueAtTime(45, now); osc2.frequency.linearRampToValueAtTime(110, now+0.25); osc2.frequency.linearRampToValueAtTime(35, now+1.8);
+  osc3.type='sawtooth'; osc3.frequency.setValueAtTime(22, now); osc3.frequency.linearRampToValueAtTime(60, now+0.35); osc3.frequency.linearRampToValueAtTime(18, now+1.8);
+
+  filt.type='bandpass'; filt.frequency.setValueAtTime(150, now); filt.frequency.linearRampToValueAtTime(600, now+0.4); filt.frequency.linearRampToValueAtTime(100, now+1.8); filt.Q.value=2;
+
+  g.gain.setValueAtTime(0, now);
+  g.gain.linearRampToValueAtTime(v*0.7, now+0.15);
+  g.gain.setValueAtTime(v*0.7, now+0.5);
+  g.gain.linearRampToValueAtTime(v*0.4, now+1.4);
+  g.gain.linearRampToValueAtTime(0, now+1.9);
+
+  [osc1,osc2,osc3].forEach(o=>{o.connect(dist);});
+  dist.connect(filt); filt.connect(g); g.connect(ac.destination);
+  [osc1,osc2,osc3].forEach(o=>{o.start(now);o.stop(now+2);});
+
+  // Sub bass impact
+  const sub = ac.createOscillator(); const sg = ac.createGain();
+  sub.type='sine'; sub.frequency.setValueAtTime(60, now); sub.frequency.exponentialRampToValueAtTime(15, now+0.8);
+  sg.gain.setValueAtTime(v*0.9, now); sg.gain.exponentialRampToValueAtTime(0.001, now+0.8);
+  sub.connect(sg); sg.connect(ac.destination); sub.start(now); sub.stop(now+0.81);
+
+  // High screech
+  const hi = ac.createOscillator(); const hg = ac.createGain();
+  hi.type='sawtooth'; hi.frequency.setValueAtTime(800, now+0.1); hi.frequency.linearRampToValueAtTime(200, now+0.8);
+  hg.gain.setValueAtTime(0, now+0.1); hg.gain.linearRampToValueAtTime(v*0.3, now+0.2); hg.gain.exponentialRampToValueAtTime(0.001, now+0.9);
+  hi.connect(hg); hg.connect(ac.destination); hi.start(now+0.1); hi.stop(now+0.91);
+
+  // Noise shudder
+  playNoise(1.2, v*0.35, 300, 'lowpass', 1.5);
+}
+
+// ══════════════════════════════════════════════════════════
+//  SFX: COIN / HEALTH / HIT
+// ══════════════════════════════════════════════════════════
+function playCoinPickup(){
+  if(MUTED.coin) return;
+  const ac=getAC();if(!ac)return;
+  const v=effVol('coin');if(v<=0)return;
+  const now=ac.currentTime;
+  const osc=ac.createOscillator();const g=ac.createGain();
+  osc.type='sine';
+  const baseFreq=880+Math.random()*220;
+  osc.frequency.setValueAtTime(baseFreq,now);
+  osc.frequency.setValueAtTime(baseFreq*1.5,now+0.04);
+  g.gain.setValueAtTime(v*0.18,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.12);
+  osc.connect(g);g.connect(ac.destination);osc.start(now);osc.stop(now+0.13);
+}
+
+let lastCoinSound=0;
+function playCoinPickupThrottled(){
+  const now=Date.now();
+  if(now-lastCoinSound<60)return;
+  lastCoinSound=now;
+  playCoinPickup();
+}
+
+function playHealthPickup(){
+  if(MUTED.health) return;
+  const ac=getAC();if(!ac)return;
+  const v=effVol('health');if(v<=0)return;
+  const now=ac.currentTime;
+  // Warm rising chord
+  [523,659,784,1046].forEach((f,i)=>{
+    const osc=ac.createOscillator();const g=ac.createGain();
+    osc.type='sine';osc.frequency.value=f;
+    g.gain.setValueAtTime(0,now+i*0.04);
+    g.gain.linearRampToValueAtTime(v*0.2,now+i*0.04+0.02);
+    g.gain.exponentialRampToValueAtTime(0.001,now+i*0.04+0.28);
+    osc.connect(g);g.connect(ac.destination);osc.start(now+i*0.04);osc.stop(now+i*0.04+0.29);
+  });
+}
+
+function playPlayerHit(){
+  if(MUTED.hit) return;
+  const ac=getAC();if(!ac)return;
+  const v=effVol('hit');if(v<=0)return;
+  const now=ac.currentTime;
+  playNoise(0.08,v*0.5,800,'bandpass',2);
+  const osc=ac.createOscillator();const g=ac.createGain();
+  osc.type='square';osc.frequency.setValueAtTime(200,now);osc.frequency.exponentialRampToValueAtTime(60,now+0.12);
+  g.gain.setValueAtTime(v*0.4,now);g.gain.exponentialRampToValueAtTime(0.001,now+0.12);
+  osc.connect(g);g.connect(ac.destination);osc.start(now);osc.stop(now+0.13);
+}
+
+// ══════════════════════════════════════════════════════════
+//  BACKGROUND MUSIC — procedural electronic loop
+// ══════════════════════════════════════════════════════════
+let bgmNodes = null;
+let bgmScheduler = null;
+let bgmBeat = 0;
+let bgmGain = null;
+
+function stopBGM(){
+  if(bgmScheduler){clearInterval(bgmScheduler);bgmScheduler=null;}
+  if(bgmNodes){try{bgmNodes.forEach(n=>n.disconnect());}catch(e){} bgmNodes=null;}
+  if(bgmGain){try{bgmGain.disconnect();}catch(e){} bgmGain=null;}
+}
+
+function startBGM(){
+  if(MUTED.bgm) return;
+  stopBGM();
+  const ac=getAC();if(!ac)return;
+  const masterGain=ac.createGain();
+  masterGain.gain.value = VOL.master * VOL.bgm;
+  masterGain.connect(ac.destination);
+  bgmGain = masterGain;
+
+  const nodes=[];
+  bgmBeat=0;
+
+  // BPM = 120, beat = 0.5s
+  const BPM=120, beat=60/BPM;
+
+  // Bass synth — plays every beat
+  function scheduleBeat(){
+    if(!gameActive && !document.getElementById('intro').style.display.includes('none')){
+      // Intro screen — lighter loop
+    }
+    const ac2=getAC();
+    const now=ac2.currentTime + 0.02;
+
+    const step = bgmBeat % 16;
+    bgmBeat++;
+
+    // Bass note sequence (Aeolian-ish, cyberpunk)
+    const bassNotes=[55,55,55,73,55,55,73,82,55,55,55,73,55,73,82,87];
+    const bassNote=bassNotes[step];
+
+    // Bass sine
+    const bass=ac2.createOscillator();const bassG=ac2.createGain();
+    const bassDist=ac2.createWaveShaper();
+    const dc=new Float32Array(256);for(let i=0;i<256;i++){const x=i/128-1;dc[i]=Math.tanh(x*3)*0.6;}
+    bassDist.curve=dc;
+    bass.type='sawtooth';bass.frequency.value=bassNote;
+    bassG.gain.setValueAtTime(0.001,now);
+    bassG.gain.linearRampToValueAtTime(0.45,now+0.01);
+    bassG.gain.exponentialRampToValueAtTime(0.001,now+beat*0.85);
+    bass.connect(bassDist);bassDist.connect(bassG);bassG.connect(masterGain);
+    bass.start(now);bass.stop(now+beat+0.05);
+    nodes.push(bass,bassG);
+
+    // Kick (beat 0,4,8,12)
+    if(step%4===0){
+      const kick=ac2.createOscillator();const kG=ac2.createGain();
+      kick.type='sine';kick.frequency.setValueAtTime(120,now);kick.frequency.exponentialRampToValueAtTime(20,now+0.15);
+      kG.gain.setValueAtTime(0.001,now);kG.gain.linearRampToValueAtTime(0.7,now+0.005);kG.gain.exponentialRampToValueAtTime(0.001,now+0.2);
+      kick.connect(kG);kG.connect(masterGain);kick.start(now);kick.stop(now+0.22);
+      nodes.push(kick,kG);
+    }
+
+    // Snare (beat 2,6,10,14)
+    if(step%4===2){
+      const buf=ac2.createBuffer(1,Math.floor(ac2.sampleRate*0.12),ac2.sampleRate);
+      const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+      const snare=ac2.createBufferSource();snare.buffer=buf;
+      const sF=ac2.createBiquadFilter();sF.type='bandpass';sF.frequency.value=1800;sF.Q.value=0.6;
+      const sG=ac2.createGain();
+      sG.gain.setValueAtTime(0.4,now);sG.gain.exponentialRampToValueAtTime(0.001,now+0.12);
+      snare.connect(sF);sF.connect(sG);sG.connect(masterGain);snare.start(now);
+      nodes.push(snare,sG);
+    }
+
+    // Hi-hat (every beat)
+    {
+      const buf=ac2.createBuffer(1,Math.floor(ac2.sampleRate*0.04),ac2.sampleRate);
+      const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+      const hh=ac2.createBufferSource();hh.buffer=buf;
+      const hF=ac2.createBiquadFilter();hF.type='highpass';hF.frequency.value=8000;
+      const hG=ac2.createGain();
+      const open=step%2===1;
+      hG.gain.setValueAtTime(0.12,now);hG.gain.exponentialRampToValueAtTime(0.001,now+(open?0.08:0.02));
+      hh.connect(hF);hF.connect(hG);hG.connect(masterGain);hh.start(now);
+      nodes.push(hh,hG);
+    }
+
+    // Arp synth (upper melody on certain beats)
+    const arpSteps=[0,3,7,10,12,10,7,5,3,0,3,5,7,10,12,15];
+    const arpBase=220;
+    const arpFreq=arpBase*Math.pow(2,arpSteps[step]/12);
+    if(step%2===0||step===7||step===15){
+      const arp=ac2.createOscillator();const aG=ac2.createGain();
+      arp.type='square';arp.frequency.value=arpFreq;
+      aG.gain.setValueAtTime(0.001,now);
+      aG.gain.linearRampToValueAtTime(0.08,now+0.01);
+      aG.gain.exponentialRampToValueAtTime(0.001,now+beat*0.45);
+      // Apply subtle reverb via delay
+      const delay=ac2.createDelay();delay.delayTime.value=beat*0.25;
+      const dG=ac2.createGain();dG.gain.value=0.25;
+      arp.connect(aG);aG.connect(masterGain);aG.connect(delay);delay.connect(dG);dG.connect(masterGain);
+      arp.start(now);arp.stop(now+beat+0.1);
+      nodes.push(arp,aG,delay,dG);
+    }
+
+    // Pad chord (every 8 beats)
+    if(step===0 || step===8){
+      const padNotes=step===0?[110,138,165]:[98,123,147];
+      padNotes.forEach(f=>{
+        const pad=ac2.createOscillator();const pG=ac2.createGain();
+        pad.type='sine';pad.frequency.value=f;
+        pG.gain.setValueAtTime(0.001,now);
+        pG.gain.linearRampToValueAtTime(0.06,now+0.3);
+        pG.gain.setValueAtTime(0.06,now+beat*6);
+        pG.gain.linearRampToValueAtTime(0.001,now+beat*8);
+        pad.connect(pG);pG.connect(masterGain);pad.start(now);pad.stop(now+beat*8+0.1);
+        nodes.push(pad,pG);
+      });
+    }
+
+    // Cleanup old nodes periodically
+    if(nodes.length>200){nodes.splice(0,100);}
+  }
+
+  bgmScheduler = setInterval(scheduleBeat, beat*1000);
+  scheduleBeat(); // play first beat immediately
+  bgmNodes = nodes;
+}
+
+function updateBGMVolume(){
+  if(bgmGain) bgmGain.gain.value = MUTED.bgm ? 0 : VOL.master * VOL.bgm;
+}
+
+// ══════════════════════════════════════════════════════════
+//  SETTINGS UI
+// ══════════════════════════════════════════════════════════
+const WEAPON_SFX_META = {
+  NORMAL:   {icon:'🎯', label:'Standard'},
+  BURST:    {icon:'🔩', label:'Burst Fire'},
+  SPREAD:   {icon:'🔮', label:'Spread Shot'},
+  GRENADE:  {icon:'💥', label:'Grenade'},
+  FLAME:    {icon:'🔥', label:'Flamethrower'},
+  FROST:    {icon:'❄',  label:'Frostgun'},
+  PLASMA:   {icon:'☄',  label:'Plasma Beam'},
+  LIGHTNING:{icon:'⚡', label:'Arc Lightning'},
+  MINE:     {icon:'🟢', label:'Neon Mine'},
+  PULSE:    {icon:'🔴', label:'Pulse Shotgun'},
+  GRAVITY:  {icon:'🌀', label:'Gravity Orb'},
+  RAILGUN:  {icon:'🔮', label:'Railgun'},
+};
+
+function buildWeaponSoundRows(){
+  const cont=document.getElementById('weapon-sound-rows');
+  if(!cont||cont.children.length>0)return;
+  Object.entries(WEAPON_SFX_META).forEach(([key,meta])=>{
+    const row=document.createElement('div');row.className='settings-row';
+    row.innerHTML=`
+      <div class="settings-label" style="padding-left:16px;font-size:clamp(7px,.85vw,9px);color:#667788">
+        <span class="s-icon">${meta.icon}</span> ${meta.label}
+      </div>
+      <div class="settings-ctrl">
+        <input type="range" class="vol-slider" id="vol-wpn-${key}" min="0" max="100" value="100"
+          oninput="onWeaponVolChange('${key}',this.value)" style="width:clamp(70px,10vw,120px)">
+        <span class="vol-val" id="lbl-wpn-${key}">100</span>
+      </div>`;
+    cont.appendChild(row);
+  });
+}
+
+function onVolChange(category, val){
+  const v = parseInt(val)/100;
+  VOL[category] = v;
+  const lbl=document.getElementById('lbl-'+category);
+  if(lbl) lbl.innerText=val;
+  if(category==='bgm') updateBGMVolume();
+  if(category==='master') updateBGMVolume();
+}
+
+function onWeaponVolChange(key, val){
+  VOL[key]=parseInt(val)/100;
+  const lbl=document.getElementById('lbl-wpn-'+key);
+  if(lbl) lbl.innerText=val;
+}
+
+function toggleAudio(category){
+  MUTED[category]=!MUTED[category];
+  const btn=document.getElementById('toggle-'+category);
+  if(btn){btn.textContent=MUTED[category]?'OFF':'ON';btn.classList.toggle('on',!MUTED[category]);}
+  if(category==='bgm'){
+    if(MUTED.bgm) stopBGM();
+    else if(gameActive) startBGM();
+    updateBGMVolume();
+  }
+}
+
+function openSettings(){
+  const wasGamePaused = gamePaused;
+  if(gameActive && !wasGamePaused) gamePaused=true;
+  buildWeaponSoundRows();
+  document.getElementById('settings-overlay').style.display='flex';
+}
+function closeSettings(){
+  document.getElementById('settings-overlay').style.display='none';
+  // Only unpause if game is active and was paused by settings
+  if(gameActive && document.getElementById('shop-overlay').style.display!=='flex') gamePaused=false;
+}
+
+// Position in-game settings button
+function positionIngameSettings(){
+  const btn=document.getElementById('ingame-settings-btn');
+  if(!btn)return;
+  const hudH=parseInt(gc.style.getPropertyValue('--hud-h'))||50;
+  btn.style.cssText=`position:absolute;top:${hudH+4}px;right:${MM_W+10}px;pointer-events:all;cursor:pointer;font-size:clamp(14px,2vw,18px);opacity:.45;transition:opacity .2s;user-select:none;z-index:6;color:#00d2ff`;
+}
+
+// ══════════════════════════════════════════════════════════
+//  HOOK AUDIO INTO GAME EVENTS
+// ══════════════════════════════════════════════════════════
+// Wrap original shoot to add sound
+// shoot() is called directly from startGame interval with sound prefix
+
+// Override explodeAt to add explosion sound
+const _origExplodeAt = explodeAt;
+
+// ── Sound wrappers — call core functions directly (no hoisting issues) ──
+
+function onKill(){
+  playEnemyDeath();
+  _onKillCore();
+}
+
+function spawnWaveBoss(){
+  _spawnWaveBossCore();
+  setTimeout(()=>playBossRoar(), 400);
+}
+
+let _prevCoins = 0;
+let _prevHealth = CFG.playerMaxHp;
+
+function updCoins(){
+  if(coins > _prevCoins) playCoinPickupThrottled();
+  _prevCoins = coins;
+  _updCoinsCore();
+}
+
+function updHp(){
+  if(health > _prevHealth) playHealthPickup();
+  if(health < _prevHealth) playPlayerHit();
+  _prevHealth = health;
+  _updHpCore();
+}
+
+function startGame(){
+  _prevCoins=0; _prevHealth=CFG.playerMaxHp;
+  _startGameCore();
+  clearInterval(shootId);
+  shootId = setInterval(()=>{
+    if(!gameActive||gamePaused)return;
+    playShotSound(weaponType);
+    shoot();
+  }, 600);
+  startBGM();
+  positionIngameSettings();
+}
+
+function processBossDead(){
+  if(!boss||bossDeadProcessing)return;
+  playExplosion(false);
+  _processBossDeadCore();
+}
+
+function explodeAt(x,y,radius,dmg,color){
+  playExplosion(radius < 100);
+  for(let mi=monsters.length-1;mi>=0;mi--){
+    const m=monsters[mi],d=Math.hypot(x-m.x,y-m.y);
+    if(d<radius){
+      m.hp-=dmg*(1-d/radius*.5);m.burnTimer=40;
+      if(m.hp<=0){if(m.type==='SPLITTER')spawnSplitterChildren(m);dropLoot(m);spawnDeathFx(m);monsters.splice(mi,1);onKill();}
+    }
+  }
+  if(boss&&Math.hypot(x-boss.x,y-boss.y)<radius){boss.hp-=dmg*.5;if(boss)updBoss();}
+  explosions.push({x,y,radius,maxRadius:radius,life:18,maxLife:18,color});
+  spawnParticles(x,y,14,color,5,5,22);
+}
+
 resizeGame();
 </script>
 </body>
